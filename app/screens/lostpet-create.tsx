@@ -66,7 +66,7 @@ export default function CreateLostPetPost() {
           phone: contactPhone,
           email: contactEmail,
         },
-        photoUrl: photo?.uri || ''  // **make sure this key is here**
+        photoUrl: photo?.uri || ''
       },
       { headers: { Authorization: `Bearer ${token}` } }
     );

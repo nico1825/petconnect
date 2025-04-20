@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  StyleSheet, SafeAreaView, Image, Button, TextInput
-} from 'react-native';
+import {View, Text, FlatList, ActivityIndicator, StyleSheet, SafeAreaView, Image, Button, TextInput, TouchableOpacity, Modal} from 'react-native';
 import api from '../services/api';
 
 export default function HomeScreen() {
@@ -13,6 +7,9 @@ export default function HomeScreen() {
   const [adoptions, setAdoptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({location: '', breed: '', date: ''});
+  const [filterVisible, setFilterVisible] = useState(false);
+  const filtersApplied = !!(filters.location || filters.breed || filters.date);
+
 
 
   const fetchLost = async (useFilters = false) => {
@@ -68,36 +65,36 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView>
-    <Button title="Apply Filters" onPress={() => fetchLost(true)} />
-    <View style={{ paddingHorizontal: 16 }}>
-      <TextInput
-        placeholder="Location"
-        value={filters.location}
-        onChangeText={text => setFilters(prev => ({ ...prev, location: text }))}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Breed"
-        value={filters.breed}
-        onChangeText={text => setFilters(prev => ({ ...prev, breed: text }))}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Date (YYYY-MM-DD)"
-        value={filters.date}
-        onChangeText={text => setFilters(prev => ({ ...prev, date: text }))}
-        style={styles.input}
-      />
-    </View>
     <FlatList
-      ListHeaderComponent={<Text style={styles.header}>Lost Pets</Text>}
+      contentContainerStyle={{ paddingBottom: 100 }}
+      ListHeaderComponent={
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 16 }}>
+        <Text style={styles.header}>Lost Pets</Text>
+        <TouchableOpacity onPress={() => setFilterVisible(true)}>
+          <Text style={{ color: 'blue', fontSize: 16 }}>🔍 Filter</Text>
+        </TouchableOpacity>
+      </View>
+      }
       data={lostPets}
       keyExtractor={item => item._id}
       renderItem={({ item }) => (
         <View style={styles.card}>
-          <Text style={styles.title}> Status: {item.status}</Text>
-          <Text style={styles.title}> {item.pet?.name || 'Unnamed Pet'}</Text>
-          <Text>Last seen at: {item.lastSeenLocation}</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Status:</Text>
+            <Text style={styles.value}>{item.status}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Name:</Text>
+            <Text style={styles.value}>{item.pet?.name || 'Unnamed Pet'}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Last seen:</Text>
+            <Text style={styles.value}>{item.lastSeenLocation}</Text>
+          </View>
+
+          <Text>Breed: {item.breed}</Text>
 
           <Text>Reported: { new Date(item.reportedAt).toLocaleString('en-US', {
             dateStyle: 'medium',
@@ -129,11 +126,67 @@ export default function HomeScreen() {
         </>
       }
     />
+
+    <Modal visible={filterVisible} transparent animationType="slide">
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={[styles.title, {marginBottom: 12}]}>Filter Lost Pets</Text>
+          <TextInput
+            placeholder="Location"
+            value={filters.location}
+            onChangeText={text => setFilters(prev => ({ ...prev, location: text }))}
+            style={[styles.input, { marginBottom: 12 }]}
+          />
+          <TextInput
+            placeholder="Breed"
+            value={filters.breed}
+            onChangeText={text => setFilters(prev => ({ ...prev, breed: text }))}
+            style={[styles.input, { marginBottom: 12 }]}
+          />
+          <TextInput
+            placeholder="Date (YYYY-MM-DD)"
+            value={filters.date}
+            onChangeText={text => setFilters(prev => ({ ...prev, date: text }))}
+            style={[styles.input, { marginBottom: 12 }]}
+          />
+
+         <Button
+            title="Apply Filters"
+            onPress={() => {
+              fetchLost(true);
+              setFilterVisible(false);
+            }}
+          />
+
+          {filtersApplied && (
+            <View>
+              <Button
+                title="Clear Filters"
+                color="gray"
+                onPress={() => {
+                  setFilters({ location: '', breed: '', date: '' });
+                  fetchLost(false);
+                  setFilterVisible(false);
+                }}
+              />
+            </View>
+          )}
+          <Button title="Cancel" color="red" onPress={() => setFilterVisible(false)} />
+        </View>
+      </View>
+    </Modal>
+
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  infoRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 4,},
+  label: {fontWeight: '600', marginRight: 6, minWidth: 80,},
+  value: {flex: 1,},
+  modalOverlay: {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center',},
+  modalContainer: {backgroundColor: '#fff', padding: 20, borderRadius: 12, width: '85%',},
+  input: {backgroundColor: '#eee', borderRadius: 6, padding: 10, marginBottom: 16,},
   image: {width: '100%', height: 180, borderRadius: 10, marginTop: 10, resizeMode: 'cover'},
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { fontSize: 20, fontWeight: 'bold', margin: 16 },
