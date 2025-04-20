@@ -15,8 +15,6 @@ export default function UserProfileScreen() {
   const [activePetId, setActivePetId] = useState<string | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-
-
   useFocusEffect(
   React.useCallback(() => {
 

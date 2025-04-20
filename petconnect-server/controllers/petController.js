@@ -4,7 +4,7 @@ const Pet = require('../models/Pet');
 exports.createPet = async (req, res) => {
   try {
     console.log('🐶 Create pet called by user:', req.userId);
-    const { name, species, breed, status } = req.body;
+    const { name, species, breed, status, age } = req.body;
 
     if (!req.userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -15,6 +15,7 @@ exports.createPet = async (req, res) => {
       species,
       breed,
       status,
+      age,
       owner: req.userId
     });
 
