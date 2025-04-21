@@ -10,4 +10,7 @@ router.post('/', authMiddleware, lostPetPostController.createLostPetPost);
 router.get('/', lostPetPostController.getAllLostPetPosts);
 
 router.get('/search', lostPetPostController.getLostPets);
+
+router.get('/', lostPetPostController.updateLostPetPost);
+
 module.exports = router;
