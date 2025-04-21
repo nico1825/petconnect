@@ -48,6 +48,8 @@ export default function LoginScreen() {
       await SecureStore.setItemAsync('userRole',  String(user.role));
       await SecureStore.setItemAsync('userName',  String(user.name));
       await SecureStore.setItemAsync('userEmail', String(user.email));
+      await SecureStore.setItemAsync('userLocation', String(user.location));
+
 
       // 4. Feedback + navigate into your tabs
       Alert.alert('Login successful!', `Welcome back, ${user.name}!`);

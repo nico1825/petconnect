@@ -88,6 +88,7 @@ exports.updateLostPetPost = async (req, res) => {
   }
 };
 
+
 exports.getAllLostPetPosts = async (req, res) => {
   try {
     const posts = await LostPetPost.find().populate('pet').populate('owner');

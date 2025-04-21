@@ -48,7 +48,41 @@ export default function CreateLostPetPost() {
     }
   };
 
+
+  const uploadImageToCloudinary = async (imageUri: string) => {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: imageUri,
+    type: 'image/jpeg',
+    name: 'lostpet.jpg',
+  } as any);
+  formData.append('upload_preset', 'pet_uploads');
+  formData.append('cloud_name', 'dhu2vhyt3');
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/dhu2vhyt3/image/upload`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  const data = await response.json();
+  if (!data.secure_url) throw new Error('Image upload failed');
+
+  return data.secure_url; // ✅ This is what you store in the DB
+};
+
   const handleSubmit = async () => {
+    console.log('📡 Submit button pressed');
+
+    let uploadedImageUrl = '';
+    if (photo?.uri) {
+      console.log('📸 Uploading image to Cloudinary...');
+      uploadedImageUrl = await uploadImageToCloudinary(photo.uri);
+      console.log('✅ Uploaded to Cloudinary:', uploadedImageUrl);
+    }
+
   if (!selectedPetId || !lastSeenLocation) {
     Alert.alert('Please select a pet and enter last seen location.');
     return;
@@ -66,7 +100,7 @@ export default function CreateLostPetPost() {
           phone: contactPhone,
           email: contactEmail,
         },
-        photoUrl: photo?.uri || ''
+         photoUrl: uploadedImageUrl,
       },
       { headers: { Authorization: `Bearer ${token}` } }
     );

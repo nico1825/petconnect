@@ -23,9 +23,12 @@ export default function UserProfileScreen() {
     const name = await SecureStore.getItemAsync('userName');
     const email = await SecureStore.getItemAsync('userEmail');
     const role = await SecureStore.getItemAsync('userRole');
+    const location = await SecureStore.getItemAsync('userLocation');
+
+    console.log('📍 Retrieved location from SecureStore:', location); // optional debug
 
     if (id) {
-      setUser({ id, name, email, role });
+      setUser({ id, name, email, role, location });
     }
     setLoadingUser(false);
   };
@@ -68,10 +71,6 @@ export default function UserProfileScreen() {
     await SecureStore.deleteItemAsync('userToken');
     await SecureStore.deleteItemAsync('userId');
   };
-
-
-
-
 
   return (
 

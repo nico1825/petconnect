@@ -124,6 +124,7 @@ export default function HomeScreen() {
             </View>
           ))}
         </>
+
       }
     />
 
@@ -175,7 +176,6 @@ export default function HomeScreen() {
         </View>
       </View>
     </Modal>
-
     </SafeAreaView>
   );
 }
