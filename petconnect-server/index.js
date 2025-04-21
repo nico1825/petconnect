@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -37,6 +35,10 @@ app.use('/api/shelter', shelterStaffRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/auth', authRoutes);
+
+app.get('/', (req, res) => {
+  res.send('🐾 PetConnect backend is alive and online!');
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🔥 Server running on port ${PORT}`);
